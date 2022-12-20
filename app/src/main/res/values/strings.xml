@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">LiebMovies</string>
+    <string name="title_activity_movies_list">MoviesListActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">LiebMovies</string>
+    <string name="second_fragment_label">Movie Details Fragment</string>
+    <string name="search">Search</string>
+    <string name="previous">Previous</string>
+    <string name="loading">Loading..</string>
+
+    <string name="default_search_token">Inc</string>
+    <string name="errorMessage">error in getting data</string>
+
+    <string name="api_key">ae3340b7</string>
+    <string name="message_empty_results">there are no results from network</string>
+
+    <string name="search_entry_Hint">Search ,default token is Inc</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <!-- for custom progress bar -->
+    <string name="loading_success">Load Successful !</string>
+    <string name="no_network">No network connection retriving from local storage..</string>
+    <string name="no_local">No movies in local storage , please try connecting</string>
+
+</resources>
