@@ -2,7 +2,7 @@ package com.example.liebmovies.interfaces
 
 import com.example.liebmovies.models.MovieDetailsResponse
 import com.example.liebmovies.models.MoviesResponse
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -14,12 +14,12 @@ import retrofit2.http.Query
 interface ApiInterface {
 
     @GET("?r=json&y=2022")
-    fun getMovies(
+    suspend fun getMovies(
         @Query("s") searchToken: String, @Query("apiKey") apiKey: String
-    ): Call<MoviesResponse>
+    ): Response<MoviesResponse>
 
     @GET(".")
-    fun getspecificMovieDetails(
+    suspend fun getspecificMovieDetails(
         @Query("i") imbdId: String, @Query("apiKey") apiKey: String
-    ): Call<MovieDetailsResponse>
+    ): Response<MovieDetailsResponse>
 }

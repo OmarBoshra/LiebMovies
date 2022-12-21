@@ -8,11 +8,18 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.liebmovies.R
 import com.example.liebmovies.databinding.ActivityMoviesListBinding
+import com.example.liebmovies.dependencyinjection.RetroModule
+import com.example.liebmovies.interfaces.DaggerRetroComponent
+import com.example.liebmovies.interfaces.RetroComponent
 
 class MoviesActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMoviesListBinding
+
+    val retroComponent : RetroComponent by lazy {
+        DaggerRetroComponent.builder().retroModule(RetroModule()).build()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

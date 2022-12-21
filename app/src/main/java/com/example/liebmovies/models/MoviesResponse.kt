@@ -8,7 +8,7 @@ data class MoviesResponse(
     @SerialName("Search") val search: List<Search>,
     @SerialName("totalResults") val totalResults: String
 )
-
+// domain model class
 @Serializable
 data class Search(
     @SerialName("imdbID") val imdbId: String,

@@ -15,12 +15,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.liebmovies.R
+import com.example.liebmovies.activities.MoviesActivity
 import com.example.liebmovies.adapters.RecyclerViewAdapter
 import com.example.liebmovies.customwidgets.MoviesProgressBar
 import com.example.liebmovies.databinding.FragmentMoviesListBinding
 import com.example.liebmovies.extensions.fadeIn
 import com.example.liebmovies.extensions.fadeOut
-import com.example.liebmovies.models.ClickedMovieParams
+import com.example.liebmovies.commons.ClickedMovieParams
 import com.example.liebmovies.models.MovieDetails
 import com.example.liebmovies.models.MoviesData
 import com.example.liebmovies.viewmodels.MoviesViewModel
@@ -38,7 +39,7 @@ class MoviesListFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var moviesViewModel: MoviesViewModel
+    lateinit var moviesViewModel: MoviesViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -106,6 +107,7 @@ class MoviesListFragment : Fragment() {
         val errorMessage = getString(R.string.errorMessage)
 
         moviesViewModel = ViewModelProvider(this)[MoviesViewModel::class.java]
+        (requireActivity() as MoviesActivity).retroComponent.inject(moviesViewModel)
 
         // region for movie list
         moviesViewModel.liveMoviesDataList.observe(viewLifecycleOwner) { moviesResponse ->

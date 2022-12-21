@@ -1,69 +1,56 @@
 package com.example.liebmovies.viewmodels
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.liebmovies.MoviesApplication
-import com.example.liebmovies.R
-import com.example.liebmovies.interfaces.ApiInterface
-import com.example.liebmovies.models.*
+import com.example.liebmovies.commons.ClickedMovieParams
+import com.example.liebmovies.models.MovieDetails
+import com.example.liebmovies.models.MoviesData
+import com.example.liebmovies.network.usecases.GetMovieDetailsUseCase
+import com.example.liebmovies.network.usecases.GetMoviesUseCase
+import com.example.liebmovies.network.utils.MoviesResult
 import com.example.liebmovies.sqlitedatabases.LocalMovies
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 
 /** # MoviesViewModel
  *  Utilizes the retrofit service to manage user requests ,
  */
-class MoviesViewModel(application: Application) : AndroidViewModel(application) {
+class MoviesViewModel : ViewModel() {
 
     @Inject
-    lateinit var mService: ApiInterface
+    lateinit var getMoviesUseCase: GetMoviesUseCase
+
+    @Inject
+    lateinit var getMovieDetailsUseCase: GetMovieDetailsUseCase
 
     // params that notify the MoviesListFragment about the results of the user's requests
     var liveMoviesDataList = MutableLiveData<ArrayList<MoviesData>>()
-    var liveMoviesDataListFailure = MutableLiveData<String>()
+    var liveMoviesDataListFailure = MutableLiveData<String?>()
 
     var liveMoviesDataListLocal = MutableLiveData<ArrayList<MoviesData>>()
     var liveMoviesDataListLocalFailure = MutableLiveData<String>()
 
     var liveMovieDetails = MutableLiveData<MovieDetails>()
-    var liveMovieDetailsFailure = MutableLiveData<String>()
+    var liveMovieDetailsFailure = MutableLiveData<String?>()
 
     var liveMovieDetailsLocal = MutableLiveData<MovieDetails>()
     var liveMovieDetailsLocalFailure = MutableLiveData<String>()
 
-    val errorMessage: String
-
-    init {
-        // initializing the application class
-        (application as MoviesApplication).getRetroComponent().inject(this)
-        errorMessage = (application.getString(R.string.message_empty_results))
-    }
 
     // region get requests
     fun getMovies(searchToken: String, apiKey: String) {
         viewModelScope.launch {
-            val moviesDataResponse = mService.getMovies(searchToken, apiKey)
-            moviesDataResponse.enqueue(object : Callback<MoviesResponse> {
-                override fun onResponse(
-                    call: Call<MoviesResponse?>, response: Response<MoviesResponse?>
-                ) {
+            val moviesResult = getMoviesUseCase.invoke(searchToken, apiKey)
 
-                    val responseBody = response.body()
-
-                    if (responseBody != null) {
-
+            moviesResult.let { result ->
+                when (result) {
+                    is MoviesResult.Success -> {
                         val moviesListData = ArrayList<MoviesData>()
-
-
-                        responseBody.search.forEach { search ->
+                        result.data.search.forEach { search ->
 
                             moviesListData.add(
                                 MoviesData(
@@ -76,59 +63,45 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                             )
                         }
                         liveMoviesDataList.value = moviesListData
-                    } else {
-                        liveMoviesDataListFailure.value = errorMessage
+                    }
+                    is MoviesResult.Error -> {
+                        liveMoviesDataListFailure.value = result.errorMessage
                     }
                 }
-
-                override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {
-                    val errorMessage = "err $error happened"
-                    liveMoviesDataListFailure.value = errorMessage
-                }
-            })
+            }
         }
     }
 
     fun getMovieDetails(
-        imdbId: String?, posterBitmap: Bitmap?, title: String?, type: String?, apiKey: String
+        imdbId: String, posterBitmap: Bitmap?, title: String?, type: String?, apiKey: String
     ) {
-        val movieDataResponse = imdbId?.let { mService.getspecificMovieDetails(it, apiKey) }
-        movieDataResponse?.enqueue(object : Callback<MovieDetailsResponse> {
-            override fun onResponse(
-                call: Call<MovieDetailsResponse?>, response: Response<MovieDetailsResponse?>
-            ) {
-
-                val responseBody = response.body()
-
-                responseBody?.let {
-
-                    val remoteMovieDetails = MovieDetails(
-                        title,
-                        type,
-                        posterBitmap,
-                        responseBody.release,
-                        responseBody.actors,
-                        responseBody.awards,
-                        responseBody.country,
-                        responseBody.language,
-                        responseBody.plot,
-                        responseBody.boxoffice,
-                        responseBody.rating,
-                        responseBody.genre,
-                    )
-
-                    liveMovieDetails.value = remoteMovieDetails
-
-                } ?: run {
-                    liveMovieDetailsFailure.value = errorMessage
+        viewModelScope.launch {
+            val movieDataResponse = getMovieDetailsUseCase.invoke(imdbId, apiKey)
+            movieDataResponse.let { result ->
+                when (result) {
+                    is MoviesResult.Success -> {
+                        val remoteMovieDetails = MovieDetails(
+                            title,
+                            type,
+                            posterBitmap,
+                            result.data.release,
+                            result.data.actors,
+                            result.data.awards,
+                            result.data.country,
+                            result.data.language,
+                            result.data.plot,
+                            result.data.boxoffice,
+                            result.data.rating,
+                            result.data.genre,
+                        )
+                        liveMovieDetails.value = remoteMovieDetails
+                    }
+                    is MoviesResult.Error -> {
+                        liveMovieDetailsFailure.value = result.errorMessage
+                    }
                 }
             }
-
-            override fun onFailure(call: Call<MovieDetailsResponse>, error: Throwable) {
-                val errorMessage = "err $error happened"
-                liveMovieDetailsFailure.value = errorMessage
-            }
-        })
+        }
     }
 
     // end region
@@ -166,7 +139,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                 liveMoviesDataListLocal.value = localMovies
 
             } else {
-                liveMoviesDataListLocalFailure.value = errorMessage
+                liveMoviesDataListLocalFailure.value = "errorMessage"
             }
         }
     }
@@ -186,7 +159,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
         localMovieDetails?.let {
             liveMovieDetailsLocal.value = it
         } ?: run {
-            liveMovieDetailsLocalFailure.value = errorMessage
+            liveMovieDetailsLocalFailure.value = "errorMessage"
         }
     }
 

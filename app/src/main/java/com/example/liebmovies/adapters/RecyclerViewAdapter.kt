@@ -21,7 +21,7 @@ interface ExtraMovieData {
 class RecyclerViewAdapter(
     private val defaultPosterImage: Bitmap?,
     private val getMovieData: (movieData: MoviesData?) -> Unit,
-    private val showSelectedMovie: (String?, Bitmap?, String?, String?) -> Unit
+    private val showSelectedMovie: (String, Bitmap?, String?, String?) -> Unit
 ) : ExtraMovieData, Filterable, RecyclerView.Adapter<RecyclerViewAdapter.MovieViewHolder>() {
 
     var listData = ArrayList<MoviesData>()
@@ -36,14 +36,14 @@ class RecyclerViewAdapter(
 
     class MovieViewHolder(
         binding: RecyclerviewRowitemBinding,
-        showSelectedMovie: (String?, Bitmap?, String?, String?) -> Unit
+        showSelectedMovie: (String, Bitmap?, String?, String?) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         val title = binding.movieTitle
         private val year = binding.movieYear
         val type = binding.movieType
         val poster = binding.poster
 
-        var id: String? = null
+        var imbdId: String? = null
 
         fun bind(
             data: MoviesData?,
@@ -81,14 +81,16 @@ class RecyclerViewAdapter(
                     }
                 }
             }
-            id = data?.imdbId
+            imbdId = data?.imdbId
         }
 
         init {
             itemView.setOnClickListener {
-                showSelectedMovie.invoke(
-                    id, poster.drawable.toBitmap(), title.text.toString(), type.text.toString()
-                )
+                imbdId?.let { imbdId ->
+                    showSelectedMovie.invoke(
+                        imbdId, poster.drawable.toBitmap(), title.text.toString(), type.text.toString()
+                    )
+                }
             }
         }
     }
