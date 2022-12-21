@@ -18,5 +18,5 @@ Features :-
 - add delegate and delegate the xml to the adapter
 - data binding and attributes
 - model can update state of xml directly or through databinding
-- reorderby for soring movies
+- reorderby for sorting movies
 - showing the user his saved tokens
