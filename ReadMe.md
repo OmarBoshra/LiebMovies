@@ -1,6 +1,7 @@
 Implementation of the omdb API for android utilizing clean android architecture frameworks as well as a local sqlite DBMS .
 
-![](../../demo.gif)
+<img src="https://user-images.githubusercontent.com/47230931/210105418-7ea73813-9910-4fd4-9dd3-c8366134fa09.gif" width="270" height="490" />
+
 
 ## Features :-
 
