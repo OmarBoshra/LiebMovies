@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.example.liebmovies.databinding.RecyclerviewRowitemBinding
-import com.example.liebmovies.models.MoviesData
+import com.example.liebmovies.domains.MyMoviesData
 import java.util.*
 
 interface ExtraMovieData {
@@ -20,14 +20,14 @@ interface ExtraMovieData {
 
 class RecyclerViewAdapter(
     private val defaultPosterImage: Bitmap?,
-    private val getMovieData: (movieData: MoviesData?) -> Unit,
+    private val getMovieData: (movieData: MyMoviesData?) -> Unit,
     private val showSelectedMovie: (String, Bitmap?, String?, String?) -> Unit
 ) : ExtraMovieData, Filterable, RecyclerView.Adapter<RecyclerViewAdapter.MovieViewHolder>() {
 
-    var listData = ArrayList<MoviesData>()
-    var unFilteredListData = ArrayList<MoviesData>()
+    var listData = ArrayList<MyMoviesData>()
+    var unFilteredListData = ArrayList<MyMoviesData>()
     private var isFromLocalStorage: Boolean = false
-    fun setUpdatedData(listData: ArrayList<MoviesData>, isFromLocalStorage: Boolean) {
+    fun setUpdatedData(listData: ArrayList<MyMoviesData>, isFromLocalStorage: Boolean) {
         this.isFromLocalStorage = isFromLocalStorage
         this.listData = listData
         this.unFilteredListData = listData
@@ -46,7 +46,7 @@ class RecyclerViewAdapter(
         var imbdId: String? = null
 
         fun bind(
-            data: MoviesData?,
+            data: MyMoviesData?,
             position: Int,
             defaultPosterImage: Bitmap?,
             recyclerViewAdapterInterface: ExtraMovieData,
@@ -131,7 +131,7 @@ class RecyclerViewAdapter(
                     filterResults.values = unFilteredListData
                 } else {
                     val searchChr = charSequence.toString().lowercase(Locale.getDefault())
-                    val resultData: MutableList<MoviesData> = ArrayList<MoviesData>()
+                    val resultData: MutableList<MyMoviesData> = ArrayList<MyMoviesData>()
 
                     for (moviesData in unFilteredListData) {
 
@@ -146,7 +146,7 @@ class RecyclerViewAdapter(
             }
 
             override fun publishResults(p0: CharSequence?, results: FilterResults?) {
-                listData = results?.values as ArrayList<MoviesData>
+                listData = results?.values as ArrayList<MyMoviesData>
                 notifyDataSetChanged()
             }
         }

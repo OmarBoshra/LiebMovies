@@ -1,5 +1,6 @@
 package com.example.liebmovies.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -22,8 +23,8 @@ import com.example.liebmovies.databinding.FragmentMoviesListBinding
 import com.example.liebmovies.extensions.fadeIn
 import com.example.liebmovies.extensions.fadeOut
 import com.example.liebmovies.commons.ClickedMovieParams
-import com.example.liebmovies.models.MovieDetails
-import com.example.liebmovies.models.MoviesData
+import com.example.liebmovies.domains.MyMovieDetails
+import com.example.liebmovies.domains.MyMoviesData
 import com.example.liebmovies.viewmodels.MoviesViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -53,21 +54,21 @@ class MoviesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         binding.searchButton.setOnClickListener {
             showProgressDialog()
             moviesViewModel.getMovies(getValidSearchToken(), getString(R.string.api_key))
         }
+        initializeSearchText()
         initializeProgressDialog()
         initViewModel()
         initAdapter()
-        initializeSearchQueryListener()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
     private fun initAdapter() {
         val defaultPosterImage = AppCompatResources.getDrawable(
             requireContext(), android.R.drawable.presence_video_online
@@ -76,11 +77,9 @@ class MoviesListFragment : Fragment() {
         if (defaultPosterImage != null) {
             recyclerViewAdapter =
                 RecyclerViewAdapter(defaultPosterImage.toBitmap(), getMovieData = { movieData ->
-                    val defaultSearchToken =
-                        requireContext().getString(R.string.default_search_token)
                     // save or update locally
                     moviesViewModel.insertingMoviesRequest(
-                        movieData, defaultSearchToken, requireContext()
+                        movieData, getValidSearchToken(), requireContext()
                     )
                 }, showSelectedMovie = { imdbId, posterBitmap, title, type ->
 
@@ -89,6 +88,9 @@ class MoviesListFragment : Fragment() {
                     ClickedMovieParams.title = title
                     ClickedMovieParams.posterImage = posterBitmap
                     ClickedMovieParams.type = type
+
+                    // save the search token to retrive the data later
+                    saveSearchToken(getValidSearchToken())
 
                     showProgressDialog()
                     // call the movie details use case
@@ -110,14 +112,14 @@ class MoviesListFragment : Fragment() {
         (requireActivity() as MoviesActivity).retroComponent.inject(moviesViewModel)
 
         // region for movie list
-        moviesViewModel.liveMoviesDataList.observe(viewLifecycleOwner) { moviesResponse ->
+        moviesViewModel.liveMyMoviesDataList.observe(viewLifecycleOwner) { moviesResponse ->
             successfulMoviesListRetrieval(moviesResponse, errorMessage)
         }
         moviesViewModel.liveMoviesDataListFailure.observe(viewLifecycleOwner) { failureResponse ->
             failedMoviesListRetrieval(failureResponse, errorMessage)
         }
 
-        moviesViewModel.liveMoviesDataListLocal.observe(viewLifecycleOwner) { moviesResponse ->
+        moviesViewModel.liveMyMoviesDataListLocal.observe(viewLifecycleOwner) { moviesResponse ->
 
             if (moviesResponse != null) {
                 progressDialogSuccess()
@@ -162,6 +164,7 @@ class MoviesListFragment : Fragment() {
             if (movieResponse != null) {
 
                 progressDialogSuccess()
+
                 // send data to the new fragment
                 val bundle = Bundle()
                 bundle.putParcelable(
@@ -194,12 +197,25 @@ class MoviesListFragment : Fragment() {
         )
     }
 
+    private fun saveSearchToken(searchToken : String) {
+        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
+        val editor = sharedPreferences?.edit()
+        editor?.putString(getString(R.string.saved_search_token_key), searchToken)
+        editor?.apply()
+    }
+
+    private fun getSavedSearchToken() : String? {
+        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
+        val value = sharedPreferences?.getString(getString(R.string.saved_search_token_key), getString(R.string.default_search_token))
+        return value
+    }
+
     // region post response methods
     // these methods where created to reduce the cognitive complexity metric
     // in the initViewModel method
 
     private fun successfulMoviesListRetrieval(
-        moviesResponse: ArrayList<MoviesData>?, errorMessage: String
+        moviesResponse: ArrayList<MyMoviesData>?, errorMessage: String
     ) {
         if (moviesResponse != null) {
             progressDialogSuccess()
@@ -220,7 +236,7 @@ class MoviesListFragment : Fragment() {
     }
 
     private fun successfulMovieDetailsRetrieval(
-        movieResponse: MovieDetails?, errorMessage: String
+        movieResponse: MyMovieDetails?, errorMessage: String
     ) {
         if (movieResponse != null) {
 
@@ -254,7 +270,7 @@ class MoviesListFragment : Fragment() {
             progressDialogLocalStorage()
 
             // try to fetch from local storage
-            moviesViewModel.getMoviesListFromLocalStorage(requireContext())
+            moviesViewModel.getMoviesListFromLocalStorage(requireContext(),getValidSearchToken())
 
         } else {
             Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
@@ -286,8 +302,9 @@ class MoviesListFragment : Fragment() {
         return searchToken
     }
 
-    private fun initializeSearchQueryListener() {
+    private fun initializeSearchText() {
 
+        binding.searchText.setText(getSavedSearchToken())
         binding.searchText.addTextChangedListener(object : TextWatcher {
             // only in onTextChanged am I filtering the recyclerViewList
             override fun afterTextChanged(s: Editable) {}

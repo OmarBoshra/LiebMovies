@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.liebmovies.R
 import com.example.liebmovies.databinding.FragmentMovieDetailsBinding
-import com.example.liebmovies.models.MovieDetails
+import com.example.liebmovies.domains.MyMovieDetails
 
 
 private const val MOVIEDETAILS = "MovieDetails"
@@ -31,7 +31,7 @@ class MovieDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val movieDetails: MovieDetails? = arguments?.getParcelable(MOVIEDETAILS)
+        val movieDetails: MyMovieDetails? = arguments?.getParcelable(MOVIEDETAILS)
         renderMovieDetails(movieDetails)
 
         binding.previous.setOnClickListener {
@@ -39,7 +39,7 @@ class MovieDetailsFragment : Fragment() {
         }
     }
 
-    private fun renderMovieDetails(movieDetails: MovieDetails?) {
+    private fun renderMovieDetails(movieDetails: MyMovieDetails?) {
         binding.movieTitle.text = movieDetails?.title
         binding.movieType.text = movieDetails?.type
         (movieDetails?.posterBitmap)?.let { bitMap ->

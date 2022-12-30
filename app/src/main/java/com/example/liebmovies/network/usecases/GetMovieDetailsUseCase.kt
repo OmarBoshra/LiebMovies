@@ -1,6 +1,6 @@
 package com.example.liebmovies.network.usecases
 
-import com.example.liebmovies.models.MovieDetailsResponse
+import com.example.liebmovies.network.models.MovieDetailsResponse
 import com.example.liebmovies.network.repositories.GetMovieDetailsRepository
 import com.example.liebmovies.network.utils.MoviesResult
 import javax.inject.Inject

@@ -1,7 +1,7 @@
 package com.example.liebmovies.interfaces
 
-import com.example.liebmovies.models.MovieDetailsResponse
-import com.example.liebmovies.models.MoviesResponse
+import com.example.liebmovies.network.models.MovieDetailsResponse
+import com.example.liebmovies.network.models.MoviesResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
