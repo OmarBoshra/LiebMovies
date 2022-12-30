@@ -6,7 +6,10 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName = MovieDetails.TABLE_MOVIEDETAILS, indices = [Index(value = [MovieDetails.IMDBID], unique = true)])
+@Entity(
+    tableName = MovieDetails.TABLE_MOVIEDETAILS,
+    indices = [Index(value = [MovieDetails.IMDBID], unique = true)]
+)
 class MovieDetails(
     @ColumnInfo(name = MOVIEID)
     @PrimaryKey(autoGenerate = true) val id: Long?,

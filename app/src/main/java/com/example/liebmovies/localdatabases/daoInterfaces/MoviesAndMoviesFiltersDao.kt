@@ -7,8 +7,14 @@ import com.example.liebmovies.localdatabases.models.MoviesFilters
 
 @Dao
 interface MoviesAndMoviesFiltersDao {
-@Transaction
-@Query("SELECT "+MoviesFilters.FILTERKEYWORD+" FROM "+MoviesFilters.TABLE_MOVIES_FILTERS+" WHERE "+MoviesFilters.FILTERKEYWORD+" = :filterKeyword")
+    /**
+     * getMovies
+     * the transaction annotation is there since this query involves multiple queries
+     * @param filterKeyword
+     * @return MoviesAndMoviesFilters which has the joining of the one to many relationship between the movies and their filter tokens
+     */
+    @Transaction
+    @Query("SELECT " + MoviesFilters.FILTERKEYWORD + " FROM " + MoviesFilters.TABLE_MOVIES_FILTERS + " WHERE " + MoviesFilters.FILTERKEYWORD + " = :filterKeyword")
     fun getMovies(filterKeyword: String): MoviesAndMoviesFilters
 
     companion object {

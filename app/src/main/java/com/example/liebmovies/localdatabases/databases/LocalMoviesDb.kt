@@ -1,8 +1,9 @@
 package com.example.liebmovies.localdatabases.databases
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.liebmovies.localdatabases.daoInterfaces.MovieDetailsDao
@@ -11,9 +12,12 @@ import com.example.liebmovies.localdatabases.daoInterfaces.MoviesDao
 import com.example.liebmovies.localdatabases.models.MovieDetails
 import com.example.liebmovies.localdatabases.models.Movies
 import com.example.liebmovies.localdatabases.models.MoviesFilters
-import com.example.liebmovies.localdatabases.utils.Converters
 
-@Database(entities = [Movies::class, MovieDetails::class, MoviesFilters::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Movies::class, MovieDetails::class, MoviesFilters::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class LocalMoviesDb : RoomDatabase() {
     abstract fun moviesDao(): MoviesDao
     abstract fun movieDetailsDao(): MovieDetailsDao
@@ -24,6 +28,11 @@ abstract class LocalMoviesDb : RoomDatabase() {
         @Volatile
         private var instance: LocalMoviesDb? = null
         private var initialDataBaseOperationsCalled = true
+
+        /**
+         * This Callback is used to instantiate the trigger function
+         * @since Room doesnt yet support tiggers
+         */
 
         private val callback = object : Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
@@ -55,6 +64,7 @@ abstract class LocalMoviesDb : RoomDatabase() {
 
         }
     }
+
     class Migration1to2 : Migration(1, 2) {
         override fun migrate(database: SupportSQLiteDatabase) {
             // Add a new column to the users table
