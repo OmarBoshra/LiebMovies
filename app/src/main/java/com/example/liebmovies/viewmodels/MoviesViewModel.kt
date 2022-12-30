@@ -46,7 +46,7 @@ class MoviesViewModel : ViewModel() {
     internal var liveMovieDetailsLocal = MutableLiveData<MyMovieDetails>()
     internal var liveMovieDetailsLocalFailure = MutableLiveData<String>()
 
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main
 
     // region get requests
     fun getMovies(searchToken: String, apiKey: String) {
@@ -199,7 +199,8 @@ class MoviesViewModel : ViewModel() {
             // get the local list of movies
             delay(550) // so the user can see new dialog message
             val filteredMovies = moviesAndFilters.getMovies(searchToken)
-            filteredMovies.movies.let {
+
+            filteredMovies?.movies?.let {
                 it.forEach { movie ->
                     myMoviesDataList.add(MyMoviesData(movie.imbdId,movie.title,movie.year,movie.type,posterBitmap = movie.posterImage))
                 }

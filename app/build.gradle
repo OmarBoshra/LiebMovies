@@ -10,8 +10,6 @@ plugins {
     id 'kotlinx-serialization'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
-    id("scabbard.gradle") version "0.5.0"
-
 }
 
 android {

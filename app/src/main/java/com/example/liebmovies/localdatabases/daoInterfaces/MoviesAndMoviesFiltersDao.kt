@@ -15,7 +15,7 @@ interface MoviesAndMoviesFiltersDao {
      */
     @Transaction
     @Query("SELECT " + MoviesFilters.FILTERKEYWORD + " FROM " + MoviesFilters.TABLE_MOVIES_FILTERS + " WHERE " + MoviesFilters.FILTERKEYWORD + " = :filterKeyword")
-    fun getMovies(filterKeyword: String): MoviesAndMoviesFilters
+    fun getMovies(filterKeyword: String): MoviesAndMoviesFilters?
 
     companion object {
         const val INSERT_FILTERED_MOVIE_TRIGGER =

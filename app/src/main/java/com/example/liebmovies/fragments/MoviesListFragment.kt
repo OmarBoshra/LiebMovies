@@ -1,5 +1,6 @@
 package com.example.liebmovies.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -53,21 +54,21 @@ class MoviesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         binding.searchButton.setOnClickListener {
             showProgressDialog()
             moviesViewModel.getMovies(getValidSearchToken(), getString(R.string.api_key))
         }
+        initializeSearchText()
         initializeProgressDialog()
         initViewModel()
         initAdapter()
-        initializeSearchQueryListener()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
     private fun initAdapter() {
         val defaultPosterImage = AppCompatResources.getDrawable(
             requireContext(), android.R.drawable.presence_video_online
@@ -87,6 +88,9 @@ class MoviesListFragment : Fragment() {
                     ClickedMovieParams.title = title
                     ClickedMovieParams.posterImage = posterBitmap
                     ClickedMovieParams.type = type
+
+                    // save the search token to retrive the data later
+                    saveSearchToken(getValidSearchToken())
 
                     showProgressDialog()
                     // call the movie details use case
@@ -160,6 +164,7 @@ class MoviesListFragment : Fragment() {
             if (movieResponse != null) {
 
                 progressDialogSuccess()
+
                 // send data to the new fragment
                 val bundle = Bundle()
                 bundle.putParcelable(
@@ -190,6 +195,19 @@ class MoviesListFragment : Fragment() {
                 R.string.api_key
             )
         )
+    }
+
+    private fun saveSearchToken(searchToken : String) {
+        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
+        val editor = sharedPreferences?.edit()
+        editor?.putString(getString(R.string.saved_search_token_key), searchToken)
+        editor?.apply()
+    }
+
+    private fun getSavedSearchToken() : String? {
+        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
+        val value = sharedPreferences?.getString(getString(R.string.saved_search_token_key), getString(R.string.default_search_token))
+        return value
     }
 
     // region post response methods
@@ -284,8 +302,9 @@ class MoviesListFragment : Fragment() {
         return searchToken
     }
 
-    private fun initializeSearchQueryListener() {
+    private fun initializeSearchText() {
 
+        binding.searchText.setText(getSavedSearchToken())
         binding.searchText.addTextChangedListener(object : TextWatcher {
             // only in onTextChanged am I filtering the recyclerViewList
             override fun afterTextChanged(s: Editable) {}
