@@ -1,4 +1,4 @@
-package com.example.liebmovies.sqlitedatabases
+package com.example.liebmovies.localdatabases.databases
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
@@ -7,15 +7,15 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.example.liebmovies.models.MovieDetails
-import com.example.liebmovies.models.MoviesData
+import com.example.liebmovies.domains.MyMovieDetails
+import com.example.liebmovies.domains.MyMoviesData
 import java.io.ByteArrayOutputStream
 
 /** # LocalMovies
  *  the local database that saves the movies lists as well as their specific details ,
  *  the lints with regards to changing variable names here I ignored since SQlite has a different schema
  */
-open class LocalMovies(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, VERSION) {
+open class LocalMoviesSqliHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, VERSION) {
 
     companion object {
         const val VERSION = 1
@@ -42,7 +42,7 @@ open class LocalMovies(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         const val BOXOFFICE = "boxoffice"
         const val AWARDS = "awards"
 
-        const val TABLE_MOVIES_FILTERS = "movie_moviedetails"
+        const val TABLE_MOVIES_FILTERS = "moviefilters"
         const val FILTERKEYWORD = "filterkeyword"
 
         // region indexs and triggers
@@ -79,8 +79,8 @@ open class LocalMovies(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
     // region implemented queries
 
     @SuppressLint("Range") // the range coming as -1 is the warning but since the same variables are used it shouldn't be a problem
-    open fun getMovies(): ArrayList<MoviesData> {
-        val moviesModelList: ArrayList<MoviesData> = ArrayList()
+    open fun getMovies(): ArrayList<MyMoviesData> {
+        val moviesModelList: ArrayList<MyMoviesData> = ArrayList()
         val db = readableDatabase
         val cursor = db.rawQuery(
             "SELECT * FROM $TABLE_MOVIES", null
@@ -96,7 +96,7 @@ open class LocalMovies(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
                     posterImage = BitmapFactory.decodeByteArray(blob, 0, blob.size)
                 }
                 moviesModelList.add(
-                    MoviesData(
+                    MyMoviesData(
                         imdbId = cursor.getString(cursor.getColumnIndex(IMDBID)),
                         title = cursor.getString(cursor.getColumnIndex(TITLE)),
                         year = cursor.getString(cursor.getColumnIndex(YEAR)),
@@ -115,15 +115,15 @@ open class LocalMovies(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
     @SuppressLint("Range")
     open fun getMovieDetails(
         Id: String, title: String?, type: String?, posterImage: Bitmap?
-    ): MovieDetails? {
-        var movieDetails: MovieDetails? = null
+    ): MyMovieDetails? {
+        var movieDetails: MyMovieDetails? = null
         val cursor = readableDatabase.rawQuery(
             "SELECT " + RELEASE + "," + LANGUAGES + " ," + RATING + " ," + GENRE + " ," + COUNTRY + " ," + PLOT + " ," + ACTORS + " ," + BOXOFFICE + " ," + AWARDS + " FROM " + TABLE_MOVIEDETAILS + " WHERE " + IMDBID + "=?",
             arrayOf(Id)
         )
 
         if (cursor.moveToFirst()) {
-            movieDetails = MovieDetails(
+            movieDetails = MyMovieDetails(
                 title,
                 type,
                 posterImage,
@@ -149,7 +149,7 @@ open class LocalMovies(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
      *  their viewholders are binded to recycler view because of the time Glide takes
      *  to retrive their urls ,
      */
-    open fun insertMovie(movie: MoviesData, filterKeyword: String) {
+    open fun insertMovie(movie: MyMoviesData, filterKeyword: String) {
         val db = writableDatabase
         val values = ContentValues()
 
@@ -183,7 +183,7 @@ open class LocalMovies(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
     }
 
     open fun insertMovieDetails(
-        imbdId: String, movieDetails: MovieDetails
+        imbdId: String, movieDetails: MyMovieDetails
     ) {
         val db = writableDatabase
 

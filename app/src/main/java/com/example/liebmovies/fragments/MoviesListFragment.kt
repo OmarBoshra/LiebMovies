@@ -22,8 +22,8 @@ import com.example.liebmovies.databinding.FragmentMoviesListBinding
 import com.example.liebmovies.extensions.fadeIn
 import com.example.liebmovies.extensions.fadeOut
 import com.example.liebmovies.commons.ClickedMovieParams
-import com.example.liebmovies.models.MovieDetails
-import com.example.liebmovies.models.MoviesData
+import com.example.liebmovies.domains.MyMovieDetails
+import com.example.liebmovies.domains.MyMoviesData
 import com.example.liebmovies.viewmodels.MoviesViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -76,11 +76,9 @@ class MoviesListFragment : Fragment() {
         if (defaultPosterImage != null) {
             recyclerViewAdapter =
                 RecyclerViewAdapter(defaultPosterImage.toBitmap(), getMovieData = { movieData ->
-                    val defaultSearchToken =
-                        requireContext().getString(R.string.default_search_token)
                     // save or update locally
                     moviesViewModel.insertingMoviesRequest(
-                        movieData, defaultSearchToken, requireContext()
+                        movieData, getValidSearchToken(), requireContext()
                     )
                 }, showSelectedMovie = { imdbId, posterBitmap, title, type ->
 
@@ -110,14 +108,14 @@ class MoviesListFragment : Fragment() {
         (requireActivity() as MoviesActivity).retroComponent.inject(moviesViewModel)
 
         // region for movie list
-        moviesViewModel.liveMoviesDataList.observe(viewLifecycleOwner) { moviesResponse ->
+        moviesViewModel.liveMyMoviesDataList.observe(viewLifecycleOwner) { moviesResponse ->
             successfulMoviesListRetrieval(moviesResponse, errorMessage)
         }
         moviesViewModel.liveMoviesDataListFailure.observe(viewLifecycleOwner) { failureResponse ->
             failedMoviesListRetrieval(failureResponse, errorMessage)
         }
 
-        moviesViewModel.liveMoviesDataListLocal.observe(viewLifecycleOwner) { moviesResponse ->
+        moviesViewModel.liveMyMoviesDataListLocal.observe(viewLifecycleOwner) { moviesResponse ->
 
             if (moviesResponse != null) {
                 progressDialogSuccess()
@@ -199,7 +197,7 @@ class MoviesListFragment : Fragment() {
     // in the initViewModel method
 
     private fun successfulMoviesListRetrieval(
-        moviesResponse: ArrayList<MoviesData>?, errorMessage: String
+        moviesResponse: ArrayList<MyMoviesData>?, errorMessage: String
     ) {
         if (moviesResponse != null) {
             progressDialogSuccess()
@@ -220,7 +218,7 @@ class MoviesListFragment : Fragment() {
     }
 
     private fun successfulMovieDetailsRetrieval(
-        movieResponse: MovieDetails?, errorMessage: String
+        movieResponse: MyMovieDetails?, errorMessage: String
     ) {
         if (movieResponse != null) {
 
@@ -254,7 +252,7 @@ class MoviesListFragment : Fragment() {
             progressDialogLocalStorage()
 
             // try to fetch from local storage
-            moviesViewModel.getMoviesListFromLocalStorage(requireContext())
+            moviesViewModel.getMoviesListFromLocalStorage(requireContext(),getValidSearchToken())
 
         } else {
             Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()

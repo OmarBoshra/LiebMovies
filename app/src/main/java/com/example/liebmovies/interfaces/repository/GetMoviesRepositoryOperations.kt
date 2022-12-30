@@ -1,6 +1,6 @@
 package com.example.liebmovies.interfaces.repository
 
-import com.example.liebmovies.models.MoviesResponse
+import com.example.liebmovies.network.models.MoviesResponse
 
 interface GetMoviesRepositoryOperations {
 

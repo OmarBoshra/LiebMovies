@@ -12,6 +12,12 @@ import com.example.liebmovies.dependencyinjection.RetroModule
 import com.example.liebmovies.interfaces.DaggerRetroComponent
 import com.example.liebmovies.interfaces.RetroComponent
 
+/**
+ * Movies activity
+ *
+ * @constructor Create empty Movies activity
+ */
+
 class MoviesActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration

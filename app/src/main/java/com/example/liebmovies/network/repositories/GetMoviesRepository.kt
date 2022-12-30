@@ -2,7 +2,7 @@ package com.example.liebmovies.network.repositories
 
 import com.example.liebmovies.interfaces.ApiInterface
 import com.example.liebmovies.interfaces.repository.GetMoviesRepositoryOperations
-import com.example.liebmovies.models.MoviesResponse
+import com.example.liebmovies.network.models.MoviesResponse
 import com.example.liebmovies.network.utils.SafeApiRequest
 import javax.inject.Inject
 
