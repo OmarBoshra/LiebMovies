@@ -14,12 +14,13 @@
         <action
             android:id="@+id/action_MoviesListFragment_to_MoviesDetailsFragment"
             app:destination="@id/MovieDetailsFragment"
-            app:popUpTo="@id/MoviesListFragment" />
+           />
     </fragment>
     <fragment
         android:id="@+id/MovieDetailsFragment"
         android:name="com.example.liebmovies.fragments.MovieDetailsFragment"
         android:label="@string/second_fragment_label"
+        app:popUpTo="@id/MoviesListFragment"
         tools:layout="@layout/fragment_movie_details">
 
         <action

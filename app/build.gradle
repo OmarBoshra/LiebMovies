@@ -10,6 +10,7 @@ plugins {
     id 'kotlinx-serialization'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
+    id 'scabbard.gradle'
 }
 
 android {
@@ -43,6 +44,19 @@ android {
     buildFeatures {
         dataBinding true
         viewBinding true
+    }
+}
+
+scabbard {
+    enabled true
+    outputFormat "svg"
+}
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "com.github.kittinunf.result" && requested.name == "result" && requested.version == "3.0.0") {
+            useVersion("3.0.1")
+            because("Transitive dependency of Scabbard, currently not available on mavenCentral()")
+        }
     }
 }
 
