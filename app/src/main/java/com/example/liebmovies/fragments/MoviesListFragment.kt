@@ -14,6 +14,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.example.liebmovies.R
 import com.example.liebmovies.activities.MoviesActivity
@@ -254,7 +255,8 @@ class MoviesListFragment : Fragment() {
             )
 
             findNavController().navigate(
-                R.id.action_MoviesListFragment_to_MoviesDetailsFragment, bundle
+                R.id.action_MoviesListFragment_to_MoviesDetailsFragment,
+                bundle,
             )
 
         } else {

@@ -18,6 +18,7 @@ import com.example.liebmovies.localdatabases.models.MovieDetails
 import com.example.liebmovies.localdatabases.models.Movies
 import com.example.liebmovies.network.models.MovieDetailsResponse
 import com.example.liebmovies.network.models.MoviesResponse
+import com.example.liebmovies.viewmodels.utils.SingleLiveEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import javax.inject.Inject
@@ -40,7 +41,7 @@ class MoviesViewModel : ViewModel() {
     internal var liveMyMoviesDataListLocal = MutableLiveData<ArrayList<MyMoviesData>>()
     internal var liveMoviesDataListLocalFailure = MutableLiveData<String>()
 
-    internal var liveMovieDetails = MutableLiveData<MyMovieDetails>()
+    internal var liveMovieDetails = SingleLiveEvent<MyMovieDetails>()
     internal var liveMovieDetailsFailure = MutableLiveData<String?>()
 
     internal var liveMovieDetailsLocal = MutableLiveData<MyMovieDetails>()
