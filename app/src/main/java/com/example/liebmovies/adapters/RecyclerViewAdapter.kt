@@ -116,8 +116,10 @@ class RecyclerViewAdapter(
         if (posterBitmap == null) {
             getMovieData.invoke(listData[position])
         } else {
-            listData[position].posterBitmap = posterBitmap
-            getMovieData.invoke(listData[position])
+            if(listData.size>0) {
+                listData[position].posterBitmap = posterBitmap
+                getMovieData.invoke(listData[position])
+            }
         }
     }
 

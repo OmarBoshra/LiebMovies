@@ -44,7 +44,7 @@ class MoviesViewModel : ViewModel() {
     internal var liveMovieDetails = SingleLiveEvent<MyMovieDetails>()
     internal var liveMovieDetailsFailure = MutableLiveData<String?>()
 
-    internal var liveMovieDetailsLocal = MutableLiveData<MyMovieDetails>()
+    internal var liveMovieDetailsLocal = SingleLiveEvent<MyMovieDetails>()
     internal var liveMovieDetailsLocalFailure = MutableLiveData<String>()
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main
