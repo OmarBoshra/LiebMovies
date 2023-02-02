@@ -42,7 +42,7 @@ class MoviesViewModel : ViewModel() {
     internal var liveMoviesDataListLocalFailure = MutableLiveData<String>()
 
     internal var liveMovieDetails = SingleLiveEvent<MyMovieDetails>()
-    internal var liveMovieDetailsFailure = MutableLiveData<String?>()
+    internal var liveMovieDetailsFailure = SingleLiveEvent<String?>()
 
     internal var liveMovieDetailsLocal = SingleLiveEvent<MyMovieDetails>()
     internal var liveMovieDetailsLocalFailure = MutableLiveData<String>()
