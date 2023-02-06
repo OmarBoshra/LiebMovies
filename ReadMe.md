@@ -11,7 +11,7 @@ Implementation of the omdb API for android utilizing clean android architecture 
 
 ## Bugs
 
-- moving back from Movie details page needs to be like the previous button
+ - no inherent bugs
 
 ## Improvements that will be made on the application :-
 

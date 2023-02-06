@@ -2,10 +2,13 @@ package com.example.liebmovies.dependencyinjection
 
 import com.example.liebmovies.interfaces.ApiInterface
 import com.example.liebmovies.network.repositories.GetMoviesRepository
+import com.example.liebmovies.network.usecases.GetMovieDetailsUseCase
 import com.example.liebmovies.network.usecases.GetMoviesUseCase
+import com.example.liebmovies.viewmodels.MoviesViewModelFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType

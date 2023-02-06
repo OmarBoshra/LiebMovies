@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +24,9 @@ import com.example.liebmovies.commons.ClickedMovieParams
 import com.example.liebmovies.domains.MyMovieDetails
 import com.example.liebmovies.domains.MyMoviesData
 import com.example.liebmovies.viewmodels.MoviesViewModel
+import com.example.liebmovies.viewmodels.MoviesViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import javax.inject.Inject
 
 
 class MoviesListFragment : Fragment() {
@@ -39,6 +39,9 @@ class MoviesListFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var getMoviesViewModelFactory: MoviesViewModelFactory
 
     lateinit var moviesViewModel: MoviesViewModel
 
@@ -106,13 +109,11 @@ class MoviesListFragment : Fragment() {
     private fun initViewModel() {
         val errorMessage = getString(R.string.errorMessage)
 
-        moviesViewModel = ViewModelProvider(this)[MoviesViewModel::class.java]
-        (requireActivity() as MoviesActivity).retroComponent.inject(moviesViewModel)
+        (requireActivity() as MoviesActivity).retroComponent.inject(this)
+        moviesViewModel = ViewModelProvider(this, getMoviesViewModelFactory)[MoviesViewModel::class.java]
         _binding?.moviesViewModel = moviesViewModel
         _binding?.lifecycleOwner = this
         // region for movie list
-        moviesViewModel.liveMovieCount.observe(viewLifecycleOwner) { _ ->
-        }
 
         moviesViewModel.liveSearchText.observe(viewLifecycleOwner) { char ->
             recyclerViewAdapter.filter.filter(char)

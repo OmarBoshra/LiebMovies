@@ -4,10 +4,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.liebmovies.commons.ClickedMovieParams
+import com.example.liebmovies.dependencyinjection.MainDispatcher
 import com.example.liebmovies.domains.MyMovieDetails
 import com.example.liebmovies.domains.MyMoviesData
 import com.example.liebmovies.localdatabases.daoInterfaces.MovieDetailsDao
@@ -28,32 +30,31 @@ import javax.inject.Inject
 /** # MoviesViewModel
  *  Utilizes the retrofit service to manage user requests ,
  */
-class MoviesViewModel : ViewModel() {
-
-    @Inject
-    lateinit var getMoviesUseCase: GetMoviesUseCase
-
-    @Inject
-    lateinit var getMovieDetailsUseCase: GetMovieDetailsUseCase
+class MoviesViewModel (
+    val dispatcher: CoroutineDispatcher,
+    val getMoviesUseCase: GetMoviesUseCase,
+    val getMovieDetailsUseCase: GetMovieDetailsUseCase
+) : ViewModel() {
 
     // params that notify the MoviesListFragment about the results of the user's requests
-    internal var liveMyMoviesDataList = MutableLiveData<ArrayList<MyMoviesData>>()
-    internal var liveMoviesDataListFailure = MutableLiveData<String?>()
+     internal var liveMyMoviesDataList = SingleLiveEvent<ArrayList<MyMoviesData>>()
+     internal var liveMoviesDataListFailure = SingleLiveEvent<String?>()
 
-    internal var liveMyMoviesDataListLocal = MutableLiveData<ArrayList<MyMoviesData>>()
-    internal var liveMoviesDataListLocalFailure = MutableLiveData<String>()
+     internal var liveMyMoviesDataListLocal = SingleLiveEvent<ArrayList<MyMoviesData>>()
+     internal var liveMoviesDataListLocalFailure = SingleLiveEvent<String>()
 
-    internal var liveMovieDetails = SingleLiveEvent<MyMovieDetails>()
-    internal var liveMovieDetailsFailure = SingleLiveEvent<String?>()
+     internal var liveMovieDetails = SingleLiveEvent<MyMovieDetails>()
+     internal var liveMovieDetailsFailure = SingleLiveEvent<String?>()
 
-    internal var liveMovieDetailsLocal = SingleLiveEvent<MyMovieDetails>()
-    internal var liveMovieDetailsLocalFailure = MutableLiveData<String>()
+     internal var liveMovieDetailsLocal = SingleLiveEvent<MyMovieDetails>()
+     internal var liveMovieDetailsLocalFailure = SingleLiveEvent<String>()
 
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main
+     internal var liveSearchText: LiveData<CharSequence>
+     internal var MutableLiveSearchText = SingleLiveEvent<CharSequence>()
 
-    var liveMovieCount = MutableLiveData<String>()
-    var liveSearchText = MutableLiveData<CharSequence>()
-
+    init {
+        liveSearchText = MutableLiveSearchText
+    }
 
     // region get requests
     fun getMovies(searchToken: String, apiKey: String) {
@@ -217,7 +218,6 @@ class MoviesViewModel : ViewModel() {
                 // if movies locally exists get them
                 if (myMoviesDataList.isNotEmpty()) {
                     liveMyMoviesDataListLocal.value = myMoviesDataList
-                    liveMovieCount.value = filteredMovies?.movies?.size.toString()
                 } else {
                     liveMoviesDataListLocalFailure.value = "errorMessage"
                 }
@@ -282,7 +282,7 @@ class MoviesViewModel : ViewModel() {
         override fun onTextChanged(
             s: CharSequence, start: Int, before: Int, count: Int
         ) {
-            liveSearchText.value = s
+            MutableLiveSearchText.value = s
         }
     }
 
