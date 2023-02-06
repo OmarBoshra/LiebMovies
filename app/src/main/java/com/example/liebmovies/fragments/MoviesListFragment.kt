@@ -14,7 +14,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.example.liebmovies.R
 import com.example.liebmovies.activities.MoviesActivity
@@ -48,6 +47,7 @@ class MoviesListFragment : Fragment() {
     ): View {
 
         _binding = FragmentMoviesListBinding.inflate(inflater, container, false)
+        _binding?.fragment = this
         return binding.root
 
     }
@@ -55,11 +55,6 @@ class MoviesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        binding.searchButton.setOnClickListener {
-            showProgressDialog()
-            moviesViewModel.getMovies(getValidSearchToken(), getString(R.string.api_key))
-        }
         initializeSearchText()
         initializeProgressDialog()
         initViewModel()
@@ -70,6 +65,8 @@ class MoviesListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
     private fun initAdapter() {
         val defaultPosterImage = AppCompatResources.getDrawable(
             requireContext(), android.R.drawable.presence_video_online
@@ -111,6 +108,15 @@ class MoviesListFragment : Fragment() {
 
         moviesViewModel = ViewModelProvider(this)[MoviesViewModel::class.java]
         (requireActivity() as MoviesActivity).retroComponent.inject(moviesViewModel)
+        _binding?.moviesViewModel = moviesViewModel
+        _binding?.lifecycleOwner = this
+        // region for movie list
+        moviesViewModel.liveMovieCount.observe(viewLifecycleOwner) { _ ->
+        }
+
+        moviesViewModel.liveSearchText.observe(viewLifecycleOwner) { char ->
+            recyclerViewAdapter.filter.filter(char)
+        }
 
         // region for movie list
         moviesViewModel.liveMyMoviesDataList.observe(viewLifecycleOwner) { moviesResponse ->
@@ -198,19 +204,6 @@ class MoviesListFragment : Fragment() {
         )
     }
 
-    private fun saveSearchToken(searchToken : String) {
-        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
-        val editor = sharedPreferences?.edit()
-        editor?.putString(getString(R.string.saved_search_token_key), searchToken)
-        editor?.apply()
-    }
-
-    private fun getSavedSearchToken() : String? {
-        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
-        val value = sharedPreferences?.getString(getString(R.string.saved_search_token_key), getString(R.string.default_search_token))
-        return value
-    }
-
     // region post response methods
     // these methods where created to reduce the cognitive complexity metric
     // in the initViewModel method
@@ -293,6 +286,7 @@ class MoviesListFragment : Fragment() {
         }
     }
 
+    // region search button
 
     // if valid search token send it else use the default one
     private fun getValidSearchToken(): String {
@@ -304,24 +298,28 @@ class MoviesListFragment : Fragment() {
         return searchToken
     }
 
-    private fun initializeSearchText() {
-
-        binding.searchText.setText(getSavedSearchToken())
-        binding.searchText.addTextChangedListener(object : TextWatcher {
-            // only in onTextChanged am I filtering the recyclerViewList
-            override fun afterTextChanged(s: Editable) {}
-            override fun beforeTextChanged(
-                s: CharSequence, start: Int, count: Int, after: Int
-            ) {
-            }
-
-            override fun onTextChanged(
-                s: CharSequence, start: Int, before: Int, count: Int
-            ) {
-                recyclerViewAdapter.filter.filter(s)
-            }
-        })
+    private fun saveSearchToken(searchToken : String) {
+        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
+        val editor = sharedPreferences?.edit()
+        editor?.putString(getString(R.string.saved_search_token_key), searchToken)
+        editor?.apply()
     }
+
+    private fun getSavedSearchToken() : String? {
+        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
+        val value = sharedPreferences?.getString(getString(R.string.saved_search_token_key), getString(R.string.default_search_token))
+        return value
+    }
+    private fun initializeSearchText() {
+        binding.searchText.setText(getSavedSearchToken())
+    }
+
+    // Handle the search button click event
+    fun startSearch() {
+        showProgressDialog()
+        moviesViewModel.getMovies(getValidSearchToken(), getString(R.string.api_key))
+    }
+    // end region
 
     // region progress dialog
     private fun initializeProgressDialog() {

@@ -5,7 +5,7 @@
     <dimen name="margin_default">10dp</dimen>
     <dimen name="margin_start">8dp</dimen>
     <dimen name="margin_end">8dp</dimen>
-    <dimen name="movie_details_textsize">20dp</dimen>
+    <dimen name="movie_details_textsize">20sp</dimen>
     <dimen name="search_textsize">10sp</dimen>
     <dimen name="poster_width">100dp</dimen>
     <dimen name="poster_height">150dp</dimen>

@@ -2,6 +2,8 @@ package com.example.liebmovies.viewmodels
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,6 +50,10 @@ class MoviesViewModel : ViewModel() {
     internal var liveMovieDetailsLocalFailure = MutableLiveData<String>()
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main
+
+    var liveMovieCount = MutableLiveData<String>()
+    var liveSearchText = MutableLiveData<CharSequence>()
+
 
     // region get requests
     fun getMovies(searchToken: String, apiKey: String) {
@@ -200,8 +206,8 @@ class MoviesViewModel : ViewModel() {
             // get the local list of movies
             delay(550) // so the user can see new dialog message
             val filteredMovies = moviesAndFilters.getMovies(searchToken)
-
             filteredMovies?.movies?.let {
+
                 it.forEach { movie ->
                     myMoviesDataList.add(MyMoviesData(movie.imbdId,movie.title,movie.year,movie.type,posterBitmap = movie.posterImage))
                 }
@@ -211,7 +217,7 @@ class MoviesViewModel : ViewModel() {
                 // if movies locally exists get them
                 if (myMoviesDataList.isNotEmpty()) {
                     liveMyMoviesDataListLocal.value = myMoviesDataList
-
+                    liveMovieCount.value = filteredMovies?.movies?.size.toString()
                 } else {
                     liveMoviesDataListLocalFailure.value = "errorMessage"
                 }
@@ -262,4 +268,22 @@ class MoviesViewModel : ViewModel() {
 
     }
     // region end
+
+    var searchTextWatcher = object : TextWatcher {
+        // only in onTextChanged am I filtering the recyclerViewList
+        override fun afterTextChanged(s: Editable) {
+            // no implementation
+        }
+        override fun beforeTextChanged(
+            s: CharSequence, start: Int, count: Int, after: Int
+        ) {// no implementation
+        }
+
+        override fun onTextChanged(
+            s: CharSequence, start: Int, before: Int, count: Int
+        ) {
+            liveSearchText.value = s
+        }
+    }
+
 }
