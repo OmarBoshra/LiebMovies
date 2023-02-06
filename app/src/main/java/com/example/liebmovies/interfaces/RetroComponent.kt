@@ -1,12 +1,19 @@
 package com.example.liebmovies.interfaces
+import com.example.liebmovies.dependencyinjection.DispatchersModule
 import com.example.liebmovies.dependencyinjection.RetroModule
-import com.example.liebmovies.viewmodels.MoviesViewModel
+import com.example.liebmovies.fragments.MoviesListFragment
+import com.example.liebmovies.viewmodels.MoviesViewModelFactory
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [RetroModule::class])
+@Component(
+    modules = [
+        RetroModule::class,
+        DispatchersModule::class
+    ]
+)
 interface RetroComponent {
 
-    fun inject(moviesViewModel: MoviesViewModel)
+    fun inject(moviesListFragment: MoviesListFragment)
 }
