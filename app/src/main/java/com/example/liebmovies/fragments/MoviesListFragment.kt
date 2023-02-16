@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
@@ -16,13 +17,13 @@ import androidx.navigation.fragment.findNavController
 import com.example.liebmovies.R
 import com.example.liebmovies.activities.MoviesActivity
 import com.example.liebmovies.adapters.RecyclerViewAdapter
+import com.example.liebmovies.commons.ClickedMovieParams
 import com.example.liebmovies.customwidgets.MoviesProgressBar
 import com.example.liebmovies.databinding.FragmentMoviesListBinding
-import com.example.liebmovies.extensions.fadeIn
-import com.example.liebmovies.extensions.fadeOut
-import com.example.liebmovies.commons.ClickedMovieParams
 import com.example.liebmovies.domains.MyMovieDetails
 import com.example.liebmovies.domains.MyMoviesData
+import com.example.liebmovies.extensions.fadeIn
+import com.example.liebmovies.extensions.fadeOut
 import com.example.liebmovies.viewmodels.MoviesViewModel
 import com.example.liebmovies.viewmodels.MoviesViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -34,7 +35,6 @@ class MoviesListFragment : Fragment() {
     private var _binding: FragmentMoviesListBinding? = null
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
     private lateinit var dialogProgress: MoviesProgressBar
-
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -115,6 +115,10 @@ class MoviesListFragment : Fragment() {
         _binding?.lifecycleOwner = this
         // region for movie list
 
+        moviesViewModel.LiveSearchTokens.observe(viewLifecycleOwner) { savedTokens ->
+            setAutocompleteList(savedTokens)
+        }
+
         moviesViewModel.liveSearchText.observe(viewLifecycleOwner) { char ->
             recyclerViewAdapter.filter.filter(char)
         }
@@ -122,6 +126,7 @@ class MoviesListFragment : Fragment() {
         // region for movie list
         moviesViewModel.liveMyMoviesDataList.observe(viewLifecycleOwner) { moviesResponse ->
             successfulMoviesListRetrieval(moviesResponse, errorMessage)
+            moviesViewModel.getSavedSearchTokens(requireContext())
         }
         moviesViewModel.liveMoviesDataListFailure.observe(viewLifecycleOwner) { failureResponse ->
             failedMoviesListRetrieval(failureResponse, errorMessage)
@@ -145,6 +150,7 @@ class MoviesListFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
             }
+            moviesViewModel.getSavedSearchTokens(requireContext())
         }
         moviesViewModel.liveMoviesDataListLocalFailure.observe(viewLifecycleOwner) { failureResponse ->
 
@@ -203,6 +209,15 @@ class MoviesListFragment : Fragment() {
                 R.string.api_key
             )
         )
+    }
+
+    private fun setAutocompleteList(savedTokens:ArrayList<String>) {
+        val autocompletionTokens = savedTokens
+            recyclerViewAdapter.listData.forEach {
+                it.title?.let { it1 -> autocompletionTokens.add(it1) }
+            }
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, autocompletionTokens)
+            binding.searchText.setAdapter(adapter)
     }
 
     // region post response methods

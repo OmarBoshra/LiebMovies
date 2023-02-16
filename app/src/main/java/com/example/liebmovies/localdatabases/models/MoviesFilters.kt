@@ -5,10 +5,10 @@ import androidx.room.*
 
 @Entity(
     tableName = MoviesFilters.TABLE_MOVIES_FILTERS,
-    indices = [Index(value = [Movies.MOVIEID], unique = true)],
+    indices = [Index(value = [Movies .MOVIEID], unique = true)],
     foreignKeys = [ForeignKey(
         entity = Movies::class,
-        parentColumns = arrayOf(MoviesFilters.MOVIEID),
+        parentColumns = arrayOf(Movies.MOVIEID),
         childColumns = arrayOf(MoviesFilters.MOVIEID),
         onUpdate = ForeignKey.CASCADE,
         onDelete = ForeignKey.CASCADE

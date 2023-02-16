@@ -9,6 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.liebmovies.localdatabases.daoInterfaces.MovieDetailsDao
 import com.example.liebmovies.localdatabases.daoInterfaces.MoviesAndMoviesFiltersDao
 import com.example.liebmovies.localdatabases.daoInterfaces.MoviesDao
+import com.example.liebmovies.localdatabases.daoInterfaces.MoviesFiltersDao
 import com.example.liebmovies.localdatabases.models.MovieDetails
 import com.example.liebmovies.localdatabases.models.Movies
 import com.example.liebmovies.localdatabases.models.MoviesFilters
@@ -23,6 +24,7 @@ abstract class LocalMoviesDb : RoomDatabase() {
     abstract fun movieDetailsDao(): MovieDetailsDao
 
     abstract fun moviesAndMoviesFiltersDao(): MoviesAndMoviesFiltersDao
+    abstract fun moviesFiltersDao(): MoviesFiltersDao
 
     companion object {
         @Volatile
