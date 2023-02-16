@@ -20,7 +20,7 @@
         android:background="@android:color/background_dark"
         tools:context=".fragments.MoviesListFragment">
 
-        <androidx.appcompat.widget.AppCompatEditText
+        <AutoCompleteTextView
             android:id="@+id/search_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

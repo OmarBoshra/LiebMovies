@@ -5,11 +5,9 @@ import android.graphics.Bitmap
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.liebmovies.commons.ClickedMovieParams
-import com.example.liebmovies.dependencyinjection.MainDispatcher
 import com.example.liebmovies.domains.MyMovieDetails
 import com.example.liebmovies.domains.MyMoviesData
 import com.example.liebmovies.localdatabases.daoInterfaces.MovieDetailsDao
@@ -25,7 +23,6 @@ import com.example.liebmovies.network.models.MoviesResponse
 import com.example.liebmovies.viewmodels.utils.SingleLiveEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import javax.inject.Inject
 
 /** # MoviesViewModel
  *  Utilizes the retrofit service to manage user requests ,
@@ -51,6 +48,8 @@ class MoviesViewModel (
 
      internal var liveSearchText: LiveData<CharSequence>
      internal var MutableLiveSearchText = SingleLiveEvent<CharSequence>()
+
+    internal var LiveSearchTokens = SingleLiveEvent<ArrayList<String>>()
 
     init {
         liveSearchText = MutableLiveSearchText
@@ -207,8 +206,8 @@ class MoviesViewModel (
             // get the local list of movies
             delay(550) // so the user can see new dialog message
             val filteredMovies = moviesAndFilters.getMovies(searchToken)
-            filteredMovies?.movies?.let {
 
+            filteredMovies?.movies?.let {
                 it.forEach { movie ->
                     myMoviesDataList.add(MyMoviesData(movie.imbdId,movie.title,movie.year,movie.type,posterBitmap = movie.posterImage))
                 }
@@ -267,6 +266,29 @@ class MoviesViewModel (
     }
 
     }
+
+    /**
+     * Get search tokens
+     * the users search tokens are automatically saved in the local db
+     */
+    fun getSavedSearchTokens(context: Context){
+        // get the local list of searchTokens
+        var myMoviesSearchTokens : ArrayList<String>
+
+        viewModelScope.launch(IO) {
+            val db = LocalMoviesDb.getInstance(context)
+            val moviesFilters = db.moviesFiltersDao()
+            myMoviesSearchTokens = moviesFilters.getSearchTokens() as ArrayList<String>
+
+            withContext(dispatcher){
+               if(myMoviesSearchTokens.isNotEmpty()){
+                   LiveSearchTokens.value =  myMoviesSearchTokens
+               }
+            }
+
+        }
+    }
+
     // region end
 
     var searchTextWatcher = object : TextWatcher {
