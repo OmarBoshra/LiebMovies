@@ -40,7 +40,6 @@ class MovieDetailsFragment : Fragment() {
     }
 
 
-
     private fun renderMovieDetails(movieDetails: MyMovieDetails?) {
         binding.movieTitle.text = movieDetails?.title
         binding.movieType.text = movieDetails?.type

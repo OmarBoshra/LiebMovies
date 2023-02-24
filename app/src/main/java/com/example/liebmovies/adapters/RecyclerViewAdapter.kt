@@ -88,7 +88,10 @@ class RecyclerViewAdapter(
             itemView.setOnClickListener {
                 imbdId?.let { imbdId ->
                     showSelectedMovie.invoke(
-                        imbdId, poster.drawable.toBitmap(), title.text.toString(), type.text.toString()
+                        imbdId,
+                        poster.drawable.toBitmap(),
+                        title.text.toString(),
+                        type.text.toString()
                     )
                 }
             }
@@ -116,7 +119,7 @@ class RecyclerViewAdapter(
         if (posterBitmap == null) {
             getMovieData.invoke(listData[position])
         } else {
-            if(listData.size>0) {
+            if (listData.size > 0) {
                 listData[position].posterBitmap = posterBitmap
                 getMovieData.invoke(listData[position])
             }

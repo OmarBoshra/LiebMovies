@@ -7,9 +7,12 @@ import com.example.liebmovies.network.utils.SafeApiRequest
 import javax.inject.Inject
 
 class GetMovieDetailsRepository @Inject constructor(private val service: ApiInterface) :
-    GetMovieDetailsRepositoryOperations , SafeApiRequest() {
+    GetMovieDetailsRepositoryOperations, SafeApiRequest() {
 
-    override suspend fun getspecificMovieDetails(imbdId: String, apiKey: String): MovieDetailsResponse {
+    override suspend fun getspecificMovieDetails(
+        imbdId: String,
+        apiKey: String
+    ): MovieDetailsResponse {
         return safeApiRequest { service.getspecificMovieDetails(imbdId, apiKey) }
     }
 }

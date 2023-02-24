@@ -1,8 +1,8 @@
 package com.example.liebmovies.interfaces
+
 import com.example.liebmovies.dependencyinjection.DispatchersModule
 import com.example.liebmovies.dependencyinjection.RetroModule
 import com.example.liebmovies.fragments.MoviesListFragment
-import com.example.liebmovies.viewmodels.MoviesViewModelFactory
 import dagger.Component
 import javax.inject.Singleton
 

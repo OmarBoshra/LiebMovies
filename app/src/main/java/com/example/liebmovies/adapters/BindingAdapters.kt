@@ -6,8 +6,9 @@ import androidx.databinding.BindingAdapter
 
 object BindingAdapter {
 
-@BindingAdapter("app:textwatcher")
-@JvmStatic fun textWatcher(view: EditText, textwatcher: TextWatcher) {
-    view.addTextChangedListener(textwatcher)
-}
+    @BindingAdapter("app:textwatcher")
+    @JvmStatic
+    fun textWatcher(view: EditText, textwatcher: TextWatcher) {
+        view.addTextChangedListener(textwatcher)
+    }
 }

@@ -9,10 +9,6 @@ Implementation of the omdb API for android utilizing clean android architecture 
 - saving the searched movies locally with ROOM
 - showing the local movie details
 
-## Bugs
-
- - no inherent bugs
-
 ## Improvements that will be made on the application :-
 
 - make the view holder separate class

@@ -23,7 +23,7 @@ class MoviesActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMoviesListBinding
 
-    val retroComponent : RetroComponent by lazy {
+    val retroComponent: RetroComponent by lazy {
         DaggerRetroComponent.builder().retroModule(RetroModule()).build()
     }
 

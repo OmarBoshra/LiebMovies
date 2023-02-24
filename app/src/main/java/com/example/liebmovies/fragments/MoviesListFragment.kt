@@ -110,7 +110,8 @@ class MoviesListFragment : Fragment() {
         val errorMessage = getString(R.string.errorMessage)
 
         (requireActivity() as MoviesActivity).retroComponent.inject(this)
-        moviesViewModel = ViewModelProvider(this, getMoviesViewModelFactory)[MoviesViewModel::class.java]
+        moviesViewModel =
+            ViewModelProvider(this, getMoviesViewModelFactory)[MoviesViewModel::class.java]
         _binding?.moviesViewModel = moviesViewModel
         _binding?.lifecycleOwner = this
         // region for movie list
@@ -211,13 +212,17 @@ class MoviesListFragment : Fragment() {
         )
     }
 
-    private fun setAutocompleteList(savedTokens:ArrayList<String>) {
+    private fun setAutocompleteList(savedTokens: ArrayList<String>) {
         val autocompletionTokens = savedTokens
-            recyclerViewAdapter.listData.forEach {
-                it.title?.let { it1 -> autocompletionTokens.add(it1) }
-            }
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, autocompletionTokens)
-            binding.searchText.setAdapter(adapter)
+        recyclerViewAdapter.listData.forEach {
+            it.title?.let { it1 -> autocompletionTokens.add(it1) }
+        }
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_list_item_1,
+            autocompletionTokens
+        )
+        binding.searchText.setAdapter(adapter)
     }
 
     // region post response methods
@@ -281,7 +286,7 @@ class MoviesListFragment : Fragment() {
             progressDialogLocalStorage()
 
             // try to fetch from local storage
-            moviesViewModel.getMoviesListFromLocalStorage(requireContext(),getValidSearchToken())
+            moviesViewModel.getMoviesListFromLocalStorage(requireContext(), getValidSearchToken())
 
         } else {
             Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
@@ -314,18 +319,28 @@ class MoviesListFragment : Fragment() {
         return searchToken
     }
 
-    private fun saveSearchToken(searchToken : String) {
-        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
+    private fun saveSearchToken(searchToken: String) {
+        val sharedPreferences = context?.getSharedPreferences(
+            getString(R.string.user_preferences),
+            Context.MODE_PRIVATE
+        )
         val editor = sharedPreferences?.edit()
         editor?.putString(getString(R.string.saved_search_token_key), searchToken)
         editor?.apply()
     }
 
-    private fun getSavedSearchToken() : String? {
-        val sharedPreferences = context?.getSharedPreferences(getString(R.string.user_preferences), Context.MODE_PRIVATE)
-        val value = sharedPreferences?.getString(getString(R.string.saved_search_token_key), getString(R.string.default_search_token))
+    private fun getSavedSearchToken(): String? {
+        val sharedPreferences = context?.getSharedPreferences(
+            getString(R.string.user_preferences),
+            Context.MODE_PRIVATE
+        )
+        val value = sharedPreferences?.getString(
+            getString(R.string.saved_search_token_key),
+            getString(R.string.default_search_token)
+        )
         return value
     }
+
     private fun initializeSearchText() {
         binding.searchText.setText(getSavedSearchToken())
     }
