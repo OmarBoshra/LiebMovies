@@ -7,7 +7,7 @@ import com.example.liebmovies.network.utils.SafeApiRequest
 import javax.inject.Inject
 
 class GetMoviesRepository @Inject constructor(private val service: ApiInterface) :
-    GetMoviesRepositoryOperations , SafeApiRequest() {
+    GetMoviesRepositoryOperations, SafeApiRequest() {
     override suspend fun getMoviesList(searchToken: String, apiKey: String): MoviesResponse {
         return safeApiRequest { service.getMovies(searchToken, apiKey) }
     }
