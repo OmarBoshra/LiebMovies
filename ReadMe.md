@@ -8,12 +8,12 @@ Implementation of the omdb API for android utilizing clean android architecture 
 - filtering movies
 - saving the searched movies locally with ROOM
 - showing the local movie details
+- showing the user his saved tokens
+
 
 ## Improvements that will be made on the application :-
 
 - make the view holder separate class
 - add delegate and delegate the xml to the adapter
-- data binding and attributes
-- model can update state of xml directly or through databinding
+- data binding attributes
 - reorderby for sorting movies
-- showing the user his saved tokens
