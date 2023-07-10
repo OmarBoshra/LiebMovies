@@ -59,6 +59,7 @@ requirementDiagram
 [//]: # (- Usage of ROOM database framwork)
 [//]: # (- Usage of view and databinding)
 [//]: # (- Usage of extensions)
+- Adding kotlin kmm
 - Creating test cases
 
 ## Software requirments
