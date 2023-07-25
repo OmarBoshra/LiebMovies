@@ -107,6 +107,9 @@ erDiagram
         string type
         string posterImage
     }
+    
+    
+    
     MOVIE_DETAILS {
         string imdbid
         string release
